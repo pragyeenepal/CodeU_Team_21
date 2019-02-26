@@ -79,8 +79,11 @@ public class MessageServlet extends HttpServlet {
     String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
     String recipient = request.getParameter("recipient");
 
+    Message message = new Message(user, text);
     Message message = new Message(user, text, recipient);
     datastore.storeMessage(message);
+
+    response.sendRedirect("/user-page.html?user=" + user);
     response.sendRedirect("/user-page.html?user=" + recipient);
   }
 }
