@@ -57,7 +57,7 @@ public class Message {
     this.timestamp = timestamp;
     this.recipient = recipient;
   }
-  
+
   public UUID getId() {
     return id;
   }
