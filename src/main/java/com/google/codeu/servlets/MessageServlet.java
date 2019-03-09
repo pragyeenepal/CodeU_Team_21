@@ -89,7 +89,7 @@ public class MessageServlet extends HttpServlet {
     String replacement = "<img src=\"$1\" />";
     String textWithImagesReplaced = userText.replaceAll(regex, replacement);
         
-    message = new Message(user, textWithImagesReplaced);
+    message = new Message(user, textWithImagesReplaced);  
     datastore.storeMessage(message);
 
     response.sendRedirect("/user-page.html?user=" + user);
