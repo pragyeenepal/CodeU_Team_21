@@ -95,7 +95,7 @@ public class MessageServlet extends HttpServlet {
     //regular expression replacement logic
     String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
     
-    String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg))";
+    String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
     ArrayList<String> links = new ArrayList<String>();
     links = pullLinks(userText);
     int i =0;
@@ -126,7 +126,7 @@ public class MessageServlet extends HttpServlet {
 public ArrayList<String> pullLinks(String text) {
 	  ArrayList<String> links = new ArrayList<String>();
 	   
-	  String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg))";
+	  String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
 	  Pattern p = Pattern.compile(regex);
 	  Matcher m = p.matcher(text);
 	  while(m.find()) {
