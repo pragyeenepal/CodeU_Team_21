@@ -17,20 +17,30 @@
 package com.google.codeu.servlets;
 
 import com.google.appengine.api.users.UserService;
+
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.codeu.data.Datastore;
 import com.google.codeu.data.Message;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+
 /** Handles fetching and saving {@link Message} instances. */
+@SuppressWarnings("serial")
 @WebServlet("/messages")
 public class MessageServlet extends HttpServlet {
 
@@ -66,7 +76,8 @@ public class MessageServlet extends HttpServlet {
   }
 
   /** Stores a new {@link Message}. */
-  @Override
+  @SuppressWarnings("rawtypes")
+@Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     UserService userService = UserServiceFactory.getUserService();
@@ -83,15 +94,49 @@ public class MessageServlet extends HttpServlet {
     
     //regular expression replacement logic
     String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-   
-    String regex = "(https?://\\S+\\.(png|jpg))";
-    //String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg))";
-    String replacement = "<img src=\"$1\" />";
-    String textWithImagesReplaced = userText.replaceAll(regex, replacement);
-        
-    message = new Message(user, textWithImagesReplaced);  
-    datastore.storeMessage(message);
-
-    response.sendRedirect("/user-page.html?user=" + user);
+    
+    String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg))";
+    ArrayList<String> links = new ArrayList<String>();
+    links = pullLinks(userText);
+    int i =0;
+    while(i<links.size()) {
+    if(validateURL(links.get(i))) {
+	String replacement = "<img src=\"$1\" />";
+	String textWithImagesReplaced = userText.replaceAll(regex, replacement);
+	message = new Message(user, textWithImagesReplaced);  
+    }
+    i++;
   }
+    datastore.storeMessage(message);
+	response.sendRedirect("/user-page.html?user=" + user);
+	
+  }
+  
+  public boolean validateURL(String url){
+	  try {
+		    new URI(url).parseServerAuthority();
+		    return true;
+		  } catch (URISyntaxException e) {
+		    return false;
+		  }
+	
+  }
+  
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public ArrayList<String> pullLinks(String text) {
+	  ArrayList<String> links = new ArrayList<String>();
+	   
+	  String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg))";
+	  Pattern p = Pattern.compile(regex);
+	  Matcher m = p.matcher(text);
+	  while(m.find()) {
+	  String urlStr = m.group();
+	  if (urlStr.startsWith("(") && urlStr.endsWith(")"))
+	  {
+	  urlStr = urlStr.substring(1, urlStr.length() - 1);
+	  }
+	  links.add(urlStr);
+	  }
+	  return links;
+	  }
 }
