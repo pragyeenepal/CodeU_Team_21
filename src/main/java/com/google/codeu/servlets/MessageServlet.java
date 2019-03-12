@@ -100,11 +100,9 @@ public class MessageServlet extends HttpServlet {
     links = pullLinks(userText);
     int i =0;
     while(i<links.size()) {
-    if(validateURL(links.get(i))) {
 	String replacement = "<img src=\"$1\" />";
 	String textWithImagesReplaced = userText.replaceAll(regex, replacement);
 	message = new Message(user, textWithImagesReplaced);  
-    }
     i++;
   }
     datastore.storeMessage(message);
@@ -112,15 +110,6 @@ public class MessageServlet extends HttpServlet {
 	
   }
   
-  public boolean validateURL(String url){
-	  try {
-		    new URI(url).parseServerAuthority();
-		    return true;
-		  } catch (URISyntaxException e) {
-		    return false;
-		  }
-	
-  }
   
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public ArrayList<String> pullLinks(String text) {
