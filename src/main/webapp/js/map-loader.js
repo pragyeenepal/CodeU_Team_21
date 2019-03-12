@@ -28,36 +28,36 @@ function initialize() {
         service.nearbySearch(request, callback);
         console.log(response.latitude, response.longitude);
     });
+}
+/**
+ * Get the location snd creates a marker for each one if it is true.
+ * @param {Object} results - The location returned from the the search 
+ * @param {Object} status  - returns True if the response contains a valid result.
+ */
 
-    /**
-     * Get the location snd creates a marker for each one if it is true.
-     * @param {Object} results - The location returned from the the search 
-     * @param {Object} status  - returns True if the response contains a valid result.
-     */
-
-    function callback(results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-            for (var i = 0; i < results.length; i++) {
-                createMarker(results[i]);
-            }
+function callback(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
         }
     }
+}
 
-    /**
-     * Creates a marker for each location
-     * @param {Object} place - location details
-     */
+/**
+ * Creates a marker for each location
+ * @param {Object} place - location details
+ */
 
-    function createMarker(place) {
-        var placeLoc = place.geometry.location;
-        var marker = new google.maps.Marker({
-            map: map,
-            position: place.geometry.location
-        });
+function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+    });
 
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.setContent(place.name);
-            infowindow.open(map, this);
-        });
-    }
-    google.maps.event.addDomListener(window, 'load', initialize);
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+    });
+}
+google.maps.event.addDomListener(window, 'load', initialize);
