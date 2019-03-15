@@ -16,6 +16,8 @@
 
 package com.google.codeu.servlets;
 
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.users.UserService;
 
 import com.google.appengine.api.users.UserServiceFactory;
@@ -106,7 +108,12 @@ public class MessageServlet extends HttpServlet {
     i++;
   }
     datastore.storeMessage(message);
+    
+    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    String uploadUrl = blobstoreService.createUploadUrl("/messages") ;
+    
 	response.sendRedirect("/user-page.html?user=" + user);
+	
 	
   }
   
