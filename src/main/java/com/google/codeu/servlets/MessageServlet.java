@@ -25,8 +25,6 @@ import com.google.codeu.data.Datastore;
 import com.google.codeu.data.Message;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -113,7 +111,6 @@ public class MessageServlet extends HttpServlet {
     String uploadUrl = blobstoreService.createUploadUrl("/messages") ;
     
 	response.sendRedirect("/user-page.html?user=" + user);
-	
 	
   }
   

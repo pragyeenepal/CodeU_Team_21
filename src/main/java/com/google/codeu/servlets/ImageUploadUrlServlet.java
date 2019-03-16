@@ -22,5 +22,8 @@ public class ImageUploadUrlServlet extends HttpServlet {
 
     response.setContentType("text/html");
     response.getOutputStream().println(uploadUrl);
+    
+    
   }
+  
 }
