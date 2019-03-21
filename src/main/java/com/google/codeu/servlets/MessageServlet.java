@@ -99,24 +99,4 @@ public class MessageServlet extends HttpServlet {
 
 	    response.sendRedirect("/user-page.html?user=" + recipient);
 	  }
-		
-  
-  
-@SuppressWarnings({ "unchecked", "rawtypes" })
-public ArrayList<String> pullLinks(String text) {
-	  ArrayList<String> links = new ArrayList<String>();
-	   
-	  String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
-	  Pattern p = Pattern.compile(regex);
-	  Matcher m = p.matcher(text);
-	  while(m.find()) {
-	  String urlStr = m.group();
-	  if (urlStr.startsWith("(") && urlStr.endsWith(")"))
-	  {
-	  urlStr = urlStr.substring(1, urlStr.length() - 1);
-	  }
-	  links.add(urlStr);
-	  }
-	  return links;
-	  }
 }
