@@ -29,22 +29,6 @@ function setPageTitle() {
   document.title = parameterUsername + ' - User Page';
 }
 
-/**
- * Shows the message form if the user is logged in and viewing their own page.
- */
-function showMessageFormIfViewingSelf() {
-  fetch('/login-status')
-      .then((response) => {
-        return response.json();
-      })
-      .then((loginStatus) => {
-        if (loginStatus.isLoggedIn &&
-            loginStatus.username == parameterUsername) {
-          fetchImageUploadUrlAndShowForm();
-        }
-      });
-}
-
 function showMessageFormIfLoggedIn() {
     fetch('/login-status')
         .then((response) => {
@@ -112,11 +96,6 @@ function buildMessageDiv(message) {
   messageDiv.appendChild(headerDiv);
   messageDiv.appendChild(bodyDiv);
   
-  if(message.imageUrl){
-  bodyDiv.innerHTML += '<br/>';
-  bodyDiv.innerHTML += '<img src="' + message.imageUrl + '" />';
-  }
-
   return messageDiv;
 }
 
