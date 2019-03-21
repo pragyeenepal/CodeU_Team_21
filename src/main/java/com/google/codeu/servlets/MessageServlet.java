@@ -93,12 +93,13 @@ public class MessageServlet extends HttpServlet {
 
 		  String user = userService.getCurrentUser().getEmail();
 		  String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-
+		  String recipient = request.getParameter("recipient");
+		  
 		  BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 		  Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
 		  List<BlobKey> blobKeys = blobs.get("image");
 
-		  Message message = new Message(user, text, "");
+		  Message message = new Message(user, text, recipient, "");
 		  datastore.storeMessage(message);
 		    
 		    //regular expression replacement logic
@@ -111,7 +112,7 @@ public class MessageServlet extends HttpServlet {
 		    while(i<links.size()) {
 			String replacement = "<img src=\"$1\" />";
 			String textWithImagesReplaced = userText.replaceAll(regex, replacement);
-			message = new Message(user, textWithImagesReplaced, "");  
+			message = new Message(user, textWithImagesReplaced, recipient, "");  
 		    i++;
 		  }
 
@@ -125,42 +126,8 @@ public class MessageServlet extends HttpServlet {
 		  
 		  datastore.storeMessage(message);
 
-		  response.sendRedirect("/user-page.html?user=" + user);
+		  response.sendRedirect("/user-page.html?user=" + recipient);
 		}
-
-    /*UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/index.html");
-      return;
-    }
-
-    String user = userService.getCurrentUser().getEmail();
-    String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-
-    Message message = new Message(user, text);
-    datastore.storeMessage(message);
-    
-    //regular expression replacement logic
-    String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-    
-    String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
-    ArrayList<String> links = new ArrayList<String>();
-    links = pullLinks(userText);
-    int i =0;
-    while(i<links.size()) {
-	String replacement = "<img src=\"$1\" />";
-	String textWithImagesReplaced = userText.replaceAll(regex, replacement);
-	message = new Message(user, textWithImagesReplaced);  
-    i++;
-  }
-    datastore.storeMessage(message);
-    
-    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-    String uploadUrl = blobstoreService.createUploadUrl("/messages") ;
-    
-	response.sendRedirect("/user-page.html?user=" + user);
-	
-  }*/
   
   
 @SuppressWarnings({ "unchecked", "rawtypes" })

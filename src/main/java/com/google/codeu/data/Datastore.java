@@ -43,6 +43,7 @@ public class Datastore {
     messageEntity.setProperty("user", message.getUser());
     messageEntity.setProperty("text", message.getText());
     messageEntity.setProperty("timestamp", message.getTimestamp());
+    messageEntity.setProperty("recipient", message.getRecipient());
     
     if(message.getImageUrl() != null) {
     	  messageEntity.setProperty("imageUrl", message.getImageUrl());
@@ -74,7 +75,8 @@ public class Datastore {
         long timestamp = (long) entity.getProperty("timestamp");
         
         String imageUrl = (String) entity.getProperty("imageUrl");
-        Message message = new Message(id, user, text, timestamp, imageUrl);
+        String recipient = (String) entity.getProperty("recipient");
+		Message message = new Message(id, user, text, timestamp, recipient, imageUrl);
 
         messages.add(message);
       } catch (Exception e) {

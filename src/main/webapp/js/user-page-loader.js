@@ -44,6 +44,21 @@ function showMessageFormIfViewingSelf() {
         }
       });
 }
+
+function showMessageFormIfLoggedIn() {
+    fetch('/login-status')
+        .then((response) => {
+            return response.json();
+        })
+        .then((loginStatus) => {
+            if (loginStatus.isLoggedIn) {
+                const messageForm = document.getElementById('message-form');
+                messageForm.action = '/messages?recipient=' + parameterUsername;
+                messageForm.classList.remove('hidden');
+            }
+        });
+}
+
 function fetchImageUploadUrlAndShowForm() {
   fetch('/image-upload-url')
       .then((response) => {
@@ -96,6 +111,11 @@ function buildMessageDiv(message) {
   messageDiv.classList.add('message-div');
   messageDiv.appendChild(headerDiv);
   messageDiv.appendChild(bodyDiv);
+  
+  if(message.imageUrl){
+  bodyDiv.innerHTML += '<br/>';
+  bodyDiv.innerHTML += '<img src="' + message.imageUrl + '" />';
+  }
 
   return messageDiv;
 }
