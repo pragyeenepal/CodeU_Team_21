@@ -29,6 +29,10 @@ function setPageTitle() {
   document.title = parameterUsername + ' - User Page';
 }
 
+/**
+ *  Shows the message from other users if the user is logged in.
+ */
+
 function showMessageFormIfLoggedIn() {
     fetch('/login-status')
         .then((response) => {
@@ -43,17 +47,6 @@ function showMessageFormIfLoggedIn() {
         });
 }
 
-function fetchImageUploadUrlAndShowForm() {
-  fetch('/image-upload-url')
-      .then((response) => {
-        return response.text();
-      })
-      .then((imageUploadUrl) => {
-        const messageForm = document.getElementById('message-form');
-        messageForm.action = imageUploadUrl;
-        messageForm.classList.remove('hidden');
-      });
-}
 
 /** Fetches messages and add them to the page. */
 function fetchMessages() {
@@ -91,12 +84,12 @@ function buildMessageDiv(message) {
   bodyDiv.classList.add('message-body');
   bodyDiv.innerHTML = message.text;
 
-  const messageDiv = document.createElement('div');
-  messageDiv.classList.add('message-div');
-  messageDiv.appendChild(headerDiv);
-  messageDiv.appendChild(bodyDiv);
-  
-  return messageDiv;
+ const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message-div');
+    messageDiv.appendChild(headerDiv);
+    messageDiv.appendChild(bodyDiv);
+
+    return messageDiv;
 }
 
 /** Fetches data and populates the UI of the page. */
