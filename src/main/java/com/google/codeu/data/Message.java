@@ -32,7 +32,7 @@ public class Message {
    * random ID and uses the current system time for the creation time.
    */
   public Message(String user, String text, String recipient) {
-	this(UUID.randomUUID(), user, text, System.currentTimeMillis(), recipient);
+	    this(UUID.randomUUID(), user, text, System.currentTimeMillis(), recipient);
   }
 
   public Message(UUID id, String user, String text, long timestamp, String recipient) {
@@ -61,7 +61,6 @@ public class Message {
   }
   
   public String getRecipient(){
-	return recipient;
-  }
-
+	    return recipient;
+	  }
 }
