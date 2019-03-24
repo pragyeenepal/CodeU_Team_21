@@ -27,11 +27,12 @@ public class UfoDataServlet extends HttpServlet {
             String line = scanner.nextLine();
             String[] cells = line.split(",");
 
-            String state = cells[0];
-            double lat = Double.parseDouble(cells[1]);
-            double lng = Double.parseDouble(cells[2]);
+            String city = cells[0];
+            String state = cells[1];
+            double lat = Double.parseDouble(cells[2]);
+            double lng = Double.parseDouble(cells[3]);
 
-            ufoSightingArray.add(gson.toJsonTree(new UfoSighting(state, lat, lng)));
+            ufoSightingArray.add(gson.toJsonTree(new UfoSighting(state, lat, lng, city)));
         }
         scanner.close();
     }
@@ -46,11 +47,13 @@ public class UfoDataServlet extends HttpServlet {
         String state;
         double lat;
         double lng;
+        String city;
 
-        private UfoSighting(String state, double lat, double lng) {
+        private UfoSighting(String state, double lat, double lng, String city) {
             this.state = state;
             this.lat = lat;
             this.lng = lng;
+            this.city = city;
         }
     }
 }
