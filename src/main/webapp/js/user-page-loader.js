@@ -47,6 +47,8 @@ function showMessageFormIfLoggedIn() {
         });
 }
 
+
+
 /** Fetches messages and add them to the page. */
 function fetchMessages() {
     const url = '/messages?user=' + parameterUsername;
