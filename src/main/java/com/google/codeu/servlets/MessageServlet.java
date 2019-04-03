@@ -91,22 +91,22 @@ public class MessageServlet extends HttpServlet {
     response.sendRedirect("/user-page.html?user=" + user);
   }
   
-  /**
-   * Translate the message into a different language using Google Translation API
-   * @param messages
-   * @param targetLanguageCode
-   */
-  private void translateMessages(List<Message> messages, String targetLanguageCode) {
-	  Translate translate = TranslateOptions.getDefaultInstance().getService();
-
-	  for(Message message : messages) {
-	    String originalText = message.getText();
-
-	    Translation translation =
-	        translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
-	    String translatedText = translation.getTranslatedText();
-	      
-	    message.setText(translatedText);
-	  }    
-	}
+//  /**
+//   * Translate the message into a different language using Google Translation API
+//   * @param messages
+//   * @param targetLanguageCode
+//   */
+//  private void translateMessages(List<Message> messages, String targetLanguageCode) {
+//	  Translate translate = TranslateOptions.getDefaultInstance().getService();
+//
+//	  for(Message message : messages) {
+//	    String originalText = message.getText();
+//
+//	    Translation translation =
+//	        translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
+//	    String translatedText = translation.getTranslatedText();
+//	      
+//	    message.setText(translatedText);
+//	  }    
+//	}
 }
