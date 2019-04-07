@@ -78,10 +78,17 @@ public class MessageServlet extends HttpServlet {
     String json = gson.toJson(messages);
 
     response.getWriter().println(json);
+
+    //String targetLanguageCode for the translation method only
+    String targetLanguageCode = request.getParameter("language");
+
+    if(targetLanguageCode != null) {
+      translateMessages(messages, targetLanguageCode);
+    }
   }
 
   /** Stores a new {@link Message}. */
-  
+
 @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
@@ -92,12 +99,12 @@ public class MessageServlet extends HttpServlet {
     String user = userService.getCurrentUser().getEmail();
     String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
     String recipient = request.getParameter("recipient");
-    
-    
+
+
 
     Message message = new Message(user, text, recipient, "");
     datastore.storeMessage(message);
-    
+
   //regular expression replacement logic
     String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
 
@@ -108,13 +115,13 @@ public class MessageServlet extends HttpServlet {
     while(i<links.size()) {
 	String replacement = "<img src=\"$1\" />";
 	String textWithImagesReplaced = userText.replaceAll(regex, replacement);
-	message = new Message(user, textWithImagesReplaced,recipient, "");  
+	message = new Message(user, textWithImagesReplaced,recipient, "");
     i++;
   }
     BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 	Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
 	List<BlobKey> blobKeys = blobs.get("image");
-   
+
     if(blobKeys != null && !blobKeys.isEmpty()) {
 	    BlobKey blobKey = blobKeys.get(0);
 	    ImagesService imagesService = ImagesServiceFactory.getImagesService();
@@ -127,21 +134,23 @@ public class MessageServlet extends HttpServlet {
 
     response.sendRedirect("/user-page.html?user=" + recipient);
   }
-  
-public ArrayList<String> pullLinks(String text) {
-	  ArrayList<String> links = new ArrayList<String>();
-	   
-	  String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
-	  Pattern p = Pattern.compile(regex);
-	  Matcher m = p.matcher(text);
-	  while(m.find()) {
-	  String urlStr = m.group();
-	  if (urlStr.startsWith("(") && urlStr.endsWith(")"))
-	  {
-	  urlStr = urlStr.substring(1, urlStr.length() - 1);
-	  }
-	  links.add(urlStr);
-	  }
-	  return links;
-	  }
+
+//  /**
+//   * Translate the message into a different language using Google Translation API
+//   * @param messages
+//   * @param targetLanguageCode
+//   */
+//  private void translateMessages(List<Message> messages, String targetLanguageCode) {
+//	  Translate translate = TranslateOptions.getDefaultInstance().getService();
+//
+//	  for(Message message : messages) {
+//	    String originalText = message.getText();
+//
+//	    Translation translation =
+//	        translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
+//	    String translatedText = translation.getTranslatedText();
+//
+//	    message.setText(translatedText);
+//	  }
+//	}
 }
