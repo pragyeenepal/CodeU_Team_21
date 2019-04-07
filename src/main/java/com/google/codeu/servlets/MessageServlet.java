@@ -16,21 +16,36 @@
 
 package com.google.codeu.servlets;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.users.UserService;
+
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.codeu.data.Datastore;
 import com.google.codeu.data.Message;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+
 /** Handles fetching and saving {@link Message} instances. */
+@SuppressWarnings("serial")
 @WebServlet("/messages")
 public class MessageServlet extends HttpServlet {
 
@@ -63,7 +78,7 @@ public class MessageServlet extends HttpServlet {
     String json = gson.toJson(messages);
 
     response.getWriter().println(json);
-    
+
     //String targetLanguageCode for the translation method only
     String targetLanguageCode = request.getParameter("language");
 
@@ -73,24 +88,53 @@ public class MessageServlet extends HttpServlet {
   }
 
   /** Stores a new {@link Message}. */
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+@Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
     if (!userService.isUserLoggedIn()) {
       response.sendRedirect("/index.html");
       return;
     }
-
     String user = userService.getCurrentUser().getEmail();
     String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
+    String recipient = request.getParameter("recipient");
 
-    Message message = new Message(user, text);
+
+
+    Message message = new Message(user, text, recipient, "");
     datastore.storeMessage(message);
 
-    response.sendRedirect("/user-page.html?user=" + user);
+  //regular expression replacement logic
+    String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
+
+    String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
+    ArrayList<String> links = new ArrayList<String>();
+    links = pullLinks(userText);
+    int i =0;
+    while(i<links.size()) {
+	String replacement = "<img src=\"$1\" />";
+	String textWithImagesReplaced = userText.replaceAll(regex, replacement);
+	message = new Message(user, textWithImagesReplaced,recipient, "");
+    i++;
   }
-  
+    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+	Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+	List<BlobKey> blobKeys = blobs.get("image");
+
+    if(blobKeys != null && !blobKeys.isEmpty()) {
+	    BlobKey blobKey = blobKeys.get(0);
+	    ImagesService imagesService = ImagesServiceFactory.getImagesService();
+	    ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+	    String imageUrl = imagesService.getServingUrl(options);
+	    message.setImageUrl(imageUrl);
+	  }
+
+    datastore.storeMessage(message);
+
+    response.sendRedirect("/user-page.html?user=" + recipient);
+  }
+
 //  /**
 //   * Translate the message into a different language using Google Translation API
 //   * @param messages
@@ -105,8 +149,8 @@ public class MessageServlet extends HttpServlet {
 //	    Translation translation =
 //	        translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
 //	    String translatedText = translation.getTranslatedText();
-//	      
+//
 //	    message.setText(translatedText);
-//	  }    
+//	  }
 //	}
 }

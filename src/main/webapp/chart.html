@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A New Chart</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart(){
+      var book_data = new google.visualization.DataTable();
+      //define columns for the DataTable instance
+book_data.addColumn('string', 'Subject');
+book_data.addColumn('number', 'Votes(percent)');
+            
+//add data to book_data
+book_data.addRows([
+    ["Art and Design", 65],
+    ["Performing Arts", 60],
+    ["Computer Science and Engineering", 54],
+    ["English",40 ],
+    ["History", 35],
+    ["Science", 35],
+    ["Foreign Language", 31],
+    ["Math", 30]
+]);
+var chart = new google.visualization.BarChart(document.getElementById('book_chart'));
+var chart_options = {
+                          width: 800,
+                          height: 400
+            };
+  chart.draw(book_data, chart_options);
+    }
+</script>
+  </head>
+  <body>
+    <h1>Chart Project</h1>
+    <h2> What subjects do students like "a lot"?</h2>
+    <div id="book_chart"></div>
+    <h6 align= right>Data Source: Code.org </h6>
+  </body>
+</html>

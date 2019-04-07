@@ -45,3 +45,82 @@
 .hidden {
   display: none;
 }
+
+/*Restricting size of the image */
+.message-body img {
+  display: block;
+  margin-top: 25px;
+  max-width: 75%;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(white, #ff5050) fixed;
+  font-family: sans-serif;
+}
+
+nav {
+  background-color: #ff5050;
+  font-size: 18pt;
+  padding: 10px;
+}
+
+nav a {
+  color: black;
+  margin-right: 10px;
+}
+
+h2 {
+  margin: 0;
+}
+
+input[type=submit] {
+  background-color: #ff5050;
+  height: 50px;
+  width: 100px;
+  font-size: 14pt;
+}
+
+#content {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+#message-input {
+  height: 100px;
+  width: 99%;
+}
+
+.message-header {
+  border-bottom: thin solid black;
+  background-image: linear-gradient(to right, white , #ff5050);
+}
+
+.message-body {
+  font: 12pt cursive;
+}
+
+.panel {
+  background-color: white;
+  margin-top: 20px;
+}
+
+.centered{
+  text-align: center;
+}
+
+.padded {
+  padding: 10px;
+}
+
+.rounded {
+  border: thin solid black;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
