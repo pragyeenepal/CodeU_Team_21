@@ -55,16 +55,15 @@ public class Datastore {
   /**
    * Gets messages posted by a specific user.
    *
-   * @return a list of messages posted by the user, or empty list if user has never posted a
-   *     message. List is sorted by time descending.
+   * @return a list of messages posted by the user, or empty list if user has
+   *         never posted a message. List is sorted by time descending.
    */
   public List<Message> getMessages(String recipient) {
     List<Message> messages = new ArrayList<>();
 
-    Query query =
-            new Query("Message")
-                    .setFilter(new Query.FilterPredicate("recipient", FilterOperator.EQUAL, recipient))
-                    .addSort("timestamp", SortDirection.DESCENDING);
+    Query query = new Query("Message")
+        .setFilter(new Query.FilterPredicate("recipient", FilterOperator.EQUAL, recipient))
+        .addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
     for (Entity entity : results.asIterable()) {
@@ -88,10 +87,48 @@ public class Datastore {
 
     return messages;
   }
-  /** Returns the total number of messages for all users. */
-  public int getTotalMessageCount(){
+
+  /**
+   * Returns the total number of messages for all users.
+   */
+  public int getTotalMessageCount() {
     Query query = new Query("Message");
     PreparedQuery results = datastore.prepare(query);
     return results.countEntities(FetchOptions.Builder.withLimit(1000));
   }
+
+  /**
+   * Stores the user input for the given marker location on the map.
+   */
+  public List<UserMarker> getMarkers() {
+    List<UserMarker> markers = new ArrayList<>();
+
+    Query query = new Query("UserMarker");
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity entity : results.asIterable()) {
+      try {
+        double lat = (double) entity.getProperty("lat");
+        double lng = (double) entity.getProperty("lng");
+        String content = (String) entity.getProperty("content");
+
+        UserMarker marker = new UserMarker(lat, lng, content);
+        markers.add(marker);
+      } catch (Exception e) {
+        System.err.println("Error reading marker.");
+        System.err.println(entity.toString());
+        e.printStackTrace();
+      }
+    }
+    return markers;
+  }
+
+  public void storeMarker(UserMarker marker) {
+    Entity markerEntity = new Entity("UserMarker");
+    markerEntity.setProperty("lat", marker.getLat());
+    markerEntity.setProperty("lng", marker.getLng());
+    markerEntity.setProperty("content", marker.getContent());
+    datastore.put(markerEntity);
+  }
+
 }
