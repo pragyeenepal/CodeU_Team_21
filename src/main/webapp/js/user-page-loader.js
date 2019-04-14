@@ -100,11 +100,6 @@ function fetchMessages() {
                 messagesContainer.appendChild(messageDiv);
             });
         });
-        const parameterLanguage = urlParams.get('language');
-let url = '/messages?user=' + parameterUsername;
-if(parameterLanguage) {
-  url += '&language=' + parameterLanguage;
-}
 }
 
 /**
@@ -136,21 +131,6 @@ function buildMessageDiv(message) {
     }
 
     return messageDiv;
-}
-
-function buildLanguageLinks(){
-  const userPageUrl = '/user-page.html?user=' + parameterUsername;
-  const languagesListElement  = document.getElementById('languages');
-  languagesListElement.appendChild(createListItem(createLink(
-       userPageUrl + '&language=en', 'English')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=zh', 'Chinese')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=hi', 'Hindi')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=es', 'Spanish')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=ar', 'Arabic')));
 }
 
 /** Fetches data and populates the UI of the page. */

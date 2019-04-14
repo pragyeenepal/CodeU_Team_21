@@ -78,14 +78,6 @@ public class MessageServlet extends HttpServlet {
 		String json = gson.toJson(messages);
 
 		response.getWriter().println(json);
-
-		//String targetLanguageCode for the translation method only
-		String targetLanguageCode = request.getParameter("language");
-
-		if(targetLanguageCode != null) {
-			translateMessages(messages, targetLanguageCode);
-		}
-		translateMessages(messages, targetLanguageCode);
 	}
 
 	/** Stores a new {@link Message}. */
@@ -111,7 +103,7 @@ public class MessageServlet extends HttpServlet {
 
 		String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
 		ArrayList<String> links = new ArrayList<String>();
-		links = pullLinks(userText);
+//		links = pullLinks(userText);
 		int i =0;
 		while(i<links.size()) {
 			String replacement = "<img src=\"$1\" />";
@@ -135,19 +127,4 @@ public class MessageServlet extends HttpServlet {
 
 		response.sendRedirect("/user-page.html?user=" + recipient);
 	}
-
-	private void translateMessages(List<Message> messages, String targetLanguageCode) {
-		Translate translate = TranslateOptions.getDefaultInstance().getService();
-
-		for(Message message : messages) {
-			String originalText = message.getText();
-
-			Translation translation =
-					translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
-			String translatedText = translation.getTranslatedText();
-
-			message.setText(translatedText);
-		}    
-	}
-
 }
