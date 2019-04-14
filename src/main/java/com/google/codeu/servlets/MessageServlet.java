@@ -49,108 +49,105 @@ import org.jsoup.safety.Whitelist;
 @WebServlet("/messages")
 public class MessageServlet extends HttpServlet {
 
-  private Datastore datastore;
+	private Datastore datastore;
 
-  @Override
-  public void init() {
-    datastore = new Datastore();
-  }
+	@Override
+	public void init() {
+		datastore = new Datastore();
+	}
 
-  /**
-   * Responds with a JSON representation of {@link Message} data for a specific user. Responds with
-   * an empty array if the user is not provided.
-   */
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	/**
+	 * Responds with a JSON representation of {@link Message} data for a specific user. Responds with
+	 * an empty array if the user is not provided.
+	 */
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    response.setContentType("application/json");
+		response.setContentType("application/json");
 
-    String user = request.getParameter("user");
+		String user = request.getParameter("user");
 
-    if (user == null || user.equals("")) {
-      // Request is invalid, return empty array
-      response.getWriter().println("[]");
-      return;
-    }
+		if (user == null || user.equals("")) {
+			// Request is invalid, return empty array
+			response.getWriter().println("[]");
+			return;
+		}
 
-    List<Message> messages = datastore.getMessages(user);
-    Gson gson = new Gson();
-    String json = gson.toJson(messages);
+		List<Message> messages = datastore.getMessages(user);
+		Gson gson = new Gson();
+		String json = gson.toJson(messages);
 
-    response.getWriter().println(json);
+		response.getWriter().println(json);
 
-    //String targetLanguageCode for the translation method only
-    String targetLanguageCode = request.getParameter("language");
+		//String targetLanguageCode for the translation method only
+		String targetLanguageCode = request.getParameter("language");
 
-    if(targetLanguageCode != null) {
-      translateMessages(messages, targetLanguageCode);
-    }
-  }
+		if(targetLanguageCode != null) {
+			translateMessages(messages, targetLanguageCode);
+		}
+		translateMessages(messages, targetLanguageCode);
+	}
 
-  /** Stores a new {@link Message}. */
+	/** Stores a new {@link Message}. */
 
-@Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/index.html");
-      return;
-    }
-    String user = userService.getCurrentUser().getEmail();
-    String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-    String recipient = request.getParameter("recipient");
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserService userService = UserServiceFactory.getUserService();
+		if (!userService.isUserLoggedIn()) {
+			response.sendRedirect("/index.html");
+			return;
+		}
+		String user = userService.getCurrentUser().getEmail();
+		String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
+		String recipient = request.getParameter("recipient");
 
 
 
-    Message message = new Message(user, text, recipient, "");
-    datastore.storeMessage(message);
+		Message message = new Message(user, text, recipient, "");
+		datastore.storeMessage(message);
 
-  //regular expression replacement logic
-    String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
+		//regular expression replacement logic
+		String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
 
-    String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
-    ArrayList<String> links = new ArrayList<String>();
-    links = pullLinks(userText);
-    int i =0;
-    while(i<links.size()) {
-	String replacement = "<img src=\"$1\" />";
-	String textWithImagesReplaced = userText.replaceAll(regex, replacement);
-	message = new Message(user, textWithImagesReplaced,recipient, "");
-    i++;
-  }
-    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-	Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
-	List<BlobKey> blobKeys = blobs.get("image");
+		String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
+		ArrayList<String> links = new ArrayList<String>();
+		links = pullLinks(userText);
+		int i =0;
+		while(i<links.size()) {
+			String replacement = "<img src=\"$1\" />";
+			String textWithImagesReplaced = userText.replaceAll(regex, replacement);
+			message = new Message(user, textWithImagesReplaced,recipient, "");
+			i++;
+		}
+		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+		Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+		List<BlobKey> blobKeys = blobs.get("image");
 
-    if(blobKeys != null && !blobKeys.isEmpty()) {
-	    BlobKey blobKey = blobKeys.get(0);
-	    ImagesService imagesService = ImagesServiceFactory.getImagesService();
-	    ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
-	    String imageUrl = imagesService.getServingUrl(options);
-	    message.setImageUrl(imageUrl);
-	  }
+		if(blobKeys != null && !blobKeys.isEmpty()) {
+			BlobKey blobKey = blobKeys.get(0);
+			ImagesService imagesService = ImagesServiceFactory.getImagesService();
+			ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+			String imageUrl = imagesService.getServingUrl(options);
+			message.setImageUrl(imageUrl);
+		}
 
-    datastore.storeMessage(message);
+		datastore.storeMessage(message);
 
-    response.sendRedirect("/user-page.html?user=" + recipient);
-  }
+		response.sendRedirect("/user-page.html?user=" + recipient);
+	}
 
-//  /**
-//   * Translate the message into a different language using Google Translation API
-//   * @param messages
-//   * @param targetLanguageCode
-//   */
-//  private void translateMessages(List<Message> messages, String targetLanguageCode) {
-//	  Translate translate = TranslateOptions.getDefaultInstance().getService();
-//
-//	  for(Message message : messages) {
-//	    String originalText = message.getText();
-//
-//	    Translation translation =
-//	        translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
-//	    String translatedText = translation.getTranslatedText();
-//
-//	    message.setText(translatedText);
-//	  }
-//	}
+	private void translateMessages(List<Message> messages, String targetLanguageCode) {
+		Translate translate = TranslateOptions.getDefaultInstance().getService();
+
+		for(Message message : messages) {
+			String originalText = message.getText();
+
+			Translation translation =
+					translate.translate(originalText, TranslateOption.targetLanguage(targetLanguageCode));
+			String translatedText = translation.getTranslatedText();
+
+			message.setText(translatedText);
+		}    
+	}
+
 }
