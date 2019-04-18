@@ -79,53 +79,52 @@ public class MessageServlet extends HttpServlet {
 
 		response.getWriter().println(json);
 	}
-}
 
-/** Stores a new {@link Message}. */
+	/** Stores a new {@link Message}. */
 
-@Override
-public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-	UserService userService = UserServiceFactory.getUserService();
-	if (!userService.isUserLoggedIn()) {
-		response.sendRedirect("/index.html");
-		return;
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserService userService = UserServiceFactory.getUserService();
+		if (!userService.isUserLoggedIn()) {
+			response.sendRedirect("/index.html");
+			return;
+		}
+		String user = userService.getCurrentUser().getEmail();
+		String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
+		String recipient = request.getParameter("recipient");
+
+
+
+		Message message = new Message(user, text, recipient, "");
+		datastore.storeMessage(message);
+
+		//regular expression replacement logic
+		String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
+
+		String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
+		ArrayList<String> links = new ArrayList<String>();
+		//links = pullLinks(userText);
+		int i =0;
+		while(i<links.size()) {
+			String replacement = "<img src=\"$1\" />";
+			String textWithImagesReplaced = userText.replaceAll(regex, replacement);
+			message = new Message(user, textWithImagesReplaced,recipient, "");
+			i++;
+		}
+		BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+		Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+		List<BlobKey> blobKeys = blobs.get("image");
+
+		if(blobKeys != null && !blobKeys.isEmpty()) {
+			BlobKey blobKey = blobKeys.get(0);
+			ImagesService imagesService = ImagesServiceFactory.getImagesService();
+			ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+			String imageUrl = imagesService.getServingUrl(options);
+			message.setImageUrl(imageUrl);
+		}
+
+		datastore.storeMessage(message);
+
+		response.sendRedirect("/user-page.html?user=" + recipient);
 	}
-	String user = userService.getCurrentUser().getEmail();
-	String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-	String recipient = request.getParameter("recipient");
-
-
-
-	Message message = new Message(user, text, recipient, "");
-	datastore.storeMessage(message);
-
-	//regular expression replacement logic
-	String userText = Jsoup.clean(request.getParameter("text"), Whitelist.none());
-
-	String regex = "(https?://([^\\\\s.]+.?[^\\\\s.]*)+/[^\\\\s.]+.(png|jpg|gif|jpeg|tif|tiff|jif|jfif|jp2|jpx|j2k|j2c|fpx|pcd))";
-	ArrayList<String> links = new ArrayList<String>();
-	links = pullLinks(userText);
-	int i =0;
-	while(i<links.size()) {
-		String replacement = "<img src=\"$1\" />";
-		String textWithImagesReplaced = userText.replaceAll(regex, replacement);
-		message = new Message(user, textWithImagesReplaced,recipient, "");
-		i++;
-	}
-	BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-	Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
-	List<BlobKey> blobKeys = blobs.get("image");
-
-	if(blobKeys != null && !blobKeys.isEmpty()) {
-		BlobKey blobKey = blobKeys.get(0);
-		ImagesService imagesService = ImagesServiceFactory.getImagesService();
-		ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
-		String imageUrl = imagesService.getServingUrl(options);
-		message.setImageUrl(imageUrl);
-	}
-
-	datastore.storeMessage(message);
-
-	response.sendRedirect("/user-page.html?user=" + recipient);
-}
 }
