@@ -17,20 +17,19 @@ limitations under the License.
 <!DOCTYPE html>
 <html>
   <head>
+  <script src="https://cdn.ckeditor.com/ckeditor5/11.2.0/classic/ckeditor.js"></script>
     <title>User Page</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/user-page.css">
     <script src="/js/user-page-loader.js"></script>
   </head>
-  <body onload="buildUI();">
-  <div id = "content">
-    <nav id="navigation">
-      <a href="/">Home</a>
-      <a href="/your-page">Your Page</a>
-      <a href="/maps.html">Map</a>
-      <a href = "/chart.html">Charts</a>
-      <a href="/about.html">About our Team</a>
+    <nav>
+      <ul id="navigation">
+        <li><a href="/">Home</a></li>
+        <li><<a href = "/review-and-comment.html"> Review </a></li>
+      </ul>
+      <ul id="languages"></ul>
     </nav>
      <div class="padded rounded panel centered">
       <h1 id="page-title">User Page</h1>
@@ -52,6 +51,7 @@ limitations under the License.
     <hr/>
 
     <div id="message-container">Loading...</div>
-	</div>
+
+
   </body>
 </html>
