@@ -67,7 +67,7 @@ public class ReviewAndComment extends HttpServlet {
     //String text = request.getParameter("reviews");
     String recipient = request.getParameter("recipient");
 
-    Message message = new Message(user, text, recipient);
+    Message message = new Message(user, text, recipient, "");
     datastore.storeMessage(message);
 
     response.sendRedirect("/user-page.html?user=" + recipient);
