@@ -69,6 +69,16 @@ function showMessageFormIfViewingSelf() {
 }
 
 function fetchImageUploadUrlAndShowForm() {
+  fetch('/image-upload-url')
+      .then((response) => {
+        return response.text();
+      })
+      .then((imageUploadUrl) => {
+        const messageForm = document.getElementById('message-form');
+        messageForm.action = imageUploadUrl;
+        messageForm.classList.remove('hidden');
+      });
+=======
     fetch('/image-upload-url')
         .then((response) => {
             return response.text();
@@ -137,7 +147,7 @@ function buildMessageDiv(message) {
 
     return messageDiv;
 }
-
+=======
 /** Build a language list to the app link
  **/
 function buildLanguageLinks() {
@@ -154,6 +164,7 @@ function buildLanguageLinks() {
     languagesListElement.appendChild(createListItem(createLink(
         userPageUrl + '&language=ar', 'Arabic')));
 }
+
 
 /** Fetches data and populates the UI of the page. */
 function buildUI() {

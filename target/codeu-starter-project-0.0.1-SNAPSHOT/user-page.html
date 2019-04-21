@@ -23,7 +23,68 @@ limitations under the License.
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/user-page.css">
     <script src="/js/user-page-loader.js"></script>
+    
+     <meta charset="utf-8">
+ 
+<title>Upload Form</title>
+ 
+<!-- Stylesheets -->
+<link rel="stylesheet" href="css/style.css" media="screen">
+ 
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="js/plupload.full.js"></script>
+<script src="js/jquery-progressbar.min.js"></script>
+<script>
   </head>
+    <nav>
+      <ul id="navigation">
+        <li><a href="/">Home</a></li>
+      </ul>
+      <ul id="languages"></ul>
+    </nav>
+     <div class="padded rounded panel centered">
+      <h1 id="page-title">User Page</h1>
+    </div>
+
+	 <div class="padded rounded panel">
+    <form id="message-form" action = "/messages" class="hidden" method="POST" enctype="multipart/form-data">
+  Enter a new message:
+  <br/>
+  <textarea name="text" id="message-input" class = "rounded"></textarea>
+  <br/>
+  Add an image to your message:
+  <input type="file" name="image">
+  <br/>
+  <input type = "hidden" value= "" name= "recipient" id="recipientInput">
+  <input type="submit" value="Submit" class = "rounded">
+</form>
+</div>
+<div class="upload-form" id="uploader">
+     
+    <!-- Form Heading -->
+    <h1 class="replace-text">Upload Form</h1>
+    <a href="#" class="close" title="Close Window"><img src="img/close-button.png" alt="Close"></a>
+ 
+    <!-- Select & Upload Button -->
+    <div>
+        <a class="button" id="pickfiles" href="#">Select</a>
+        <a class="button" id="uploadfiles" href="#">Upload</a>
+    </div>
+ 
+    <!-- File List -->
+    <div id="filelist" class="cb"></div>
+ 
+    <!-- Progress Bar -->
+    <div id="progressbar"></div>
+ 
+    <!-- Close After Upload -->
+    <div id="closeAfter">
+        <span class="checkbox">
+            <input type="checkbox" name="checkbox" id="checkbox">
+            <label for="checkbox">Close window after upload</label>
+        </span>
+=======
 
   <body onload="buildUI();">
     <div id = "content">
@@ -59,6 +120,10 @@ limitations under the License.
     <hr/>
 
     <div id="message-container">Loading...</div>
+
+
+
+=======
     
   </body>
 </html>
