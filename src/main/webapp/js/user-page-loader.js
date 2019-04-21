@@ -43,6 +43,7 @@ function showMessageFormIfLoggedIn() {
                 const messageForm = document.getElementById('message-form');
                 messageForm.action = '/messages?recipient=' + parameterUsername;
                 messageForm.classList.remove('hidden');
+                fetchImageUploadUrlAndShowForm();
             }
         });
 }
@@ -51,34 +52,38 @@ function showMessageFormIfLoggedIn() {
  * Shows the message form if the user is logged in and viewing their own page.
  */
 function showMessageFormIfViewingSelf() {
-  fetch('/login-status')
-      .then((response) => {
-        return response.json();
-      })
-      .then((loginStatus) => {
-        if (loginStatus.isLoggedIn &&
-            loginStatus.username == parameterUsername) {
-          fetchImageUploadUrlAndShowForm();
-        }
-      });
+    fetch('/login-status')
+        .then((response) => {
+            return response.json();
+        })
+        .then((loginStatus) => {
+            if (loginStatus.isLoggedIn &&
+                loginStatus.username == parameterUsername) {
+                const messageForm = document.getElementById('message-form');
+                console.log(messageForm);
+                messageForm.action = '/messages?recipient=' + parameterUsername;
+                messageForm.classList.remove('hidden');
+                fetchImageUploadUrlAndShowForm();
+            }
+        });
 }
 
 function fetchImageUploadUrlAndShowForm() {
-  fetch('/image-upload-url')
-      .then((response) => {
-        return response.text();
-      })
-      .then((imageUploadUrl) => {
-        const messageForm = document.getElementById('message-form');
-        messageForm.action = imageUploadUrl;
-        messageForm.classList.remove('hidden');
-      });
-      //for translating purpose
-  const parameterLanguage = urlParams.get('language');
-		let url = '/messages?user=' + parameterUsername;
-		if(parameterLanguage) {
- 			 url += '&language=' + parameterLanguage;
-		}
+    fetch('/image-upload-url')
+        .then((response) => {
+            return response.text();
+        })
+        .then((imageUploadUrl) => {
+            const messageForm = document.getElementById('message-form');
+            messageForm.action = imageUploadUrl;
+            messageForm.classList.remove('hidden');
+        });
+    //for translating purpose
+    const parameterLanguage = urlParams.get('language');
+    let url = '/messages?user=' + parameterUsername;
+    if (parameterLanguage) {
+        url += '&language=' + parameterLanguage;
+    }
 }
 
 /** Fetches messages and add them to the page. */
@@ -125,29 +130,29 @@ function buildMessageDiv(message) {
     messageDiv.classList.add('panel');
     messageDiv.appendChild(headerDiv);
     messageDiv.appendChild(bodyDiv);
-    if(message.imageUrl){
-      bodyDiv.innerHTML += '<br/>';
-      bodyDiv.innerHTML += '<img src="' + message.imageUrl + '" />';
+    if (message.imageUrl) {
+        bodyDiv.innerHTML += '<br/>';
+        bodyDiv.innerHTML += '<img src="' + message.imageUrl + '" />';
     }
 
     return messageDiv;
 }
 
 /** Build a language list to the app link
-**/
-function buildLanguageLinks(){
-  const userPageUrl = '/user-page.html?user=' + parameterUsername;
-  const languagesListElement  = document.getElementById('languages');
-  languagesListElement.appendChild(createListItem(createLink(
-       userPageUrl + '&language=en', 'English')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=zh', 'Chinese')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=hi', 'Hindi')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=es', 'Spanish')));
-  languagesListElement.appendChild(createListItem(createLink(
-      userPageUrl + '&language=ar', 'Arabic')));
+ **/
+function buildLanguageLinks() {
+    const userPageUrl = '/user-page.html?user=' + parameterUsername;
+    const languagesListElement = document.getElementById('languages');
+    languagesListElement.appendChild(createListItem(createLink(
+        userPageUrl + '&language=en', 'English')));
+    languagesListElement.appendChild(createListItem(createLink(
+        userPageUrl + '&language=zh', 'Chinese')));
+    languagesListElement.appendChild(createListItem(createLink(
+        userPageUrl + '&language=hi', 'Hindi')));
+    languagesListElement.appendChild(createListItem(createLink(
+        userPageUrl + '&language=es', 'Spanish')));
+    languagesListElement.appendChild(createListItem(createLink(
+        userPageUrl + '&language=ar', 'Arabic')));
 }
 
 /** Fetches data and populates the UI of the page. */
