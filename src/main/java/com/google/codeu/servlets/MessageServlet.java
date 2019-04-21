@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
-
 /** Handles fetching and saving {@link Message} instances. */
 @SuppressWarnings("serial")
 @WebServlet("/messages")
@@ -58,8 +57,8 @@ public class MessageServlet extends HttpServlet {
   }
 
   /**
-   * Responds with a JSON representation of {@link Message} data for a specific user. Responds with
-   * an empty array if the user is not provided.
+   * Responds with a JSON representation of {@link Message} data for a specific
+   * user. Responds with an empty array if the user is not provided.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -82,14 +81,16 @@ public class MessageServlet extends HttpServlet {
   }
 
   /** Stores a new {@link Message}. */
-  @SuppressWarnings("rawtypes")
-@Override
+
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
     UserService userService = UserServiceFactory.getUserService();
     if (!userService.isUserLoggedIn()) {
       response.sendRedirect("/index.html");
       return;
     }
+
     String user = userService.getCurrentUser().getEmail();
     String text = Jsoup.clean(request.getParameter("text"), Whitelist.none());
     String recipient = request.getParameter("recipient");
@@ -99,7 +100,25 @@ public class MessageServlet extends HttpServlet {
     	text = Arrays.toString(reviews);
     }
 
-    Message message = new Message(user, text, recipient);
+    if (text.equals("") || text == null) {
+      // extracting data from the checkbox field
+      String[] reviews = request.getParameterValues("reviews");
+      text = Arrays.toString(reviews);
+    }
+
+    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+    List<BlobKey> blobKeys = blobs.get("image");
+
+    Message message = new Message(user, text, recipient, "");
+    if (blobKeys != null && !blobKeys.isEmpty()) {
+      BlobKey blobKey = blobKeys.get(0);
+      ImagesService imagesService = ImagesServiceFactory.getImagesService();
+      ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+      String imageUrl = imagesService.getServingUrl(options);
+      message.setImageUrl(imageUrl);
+    }
+
     datastore.storeMessage(message);
 
     response.sendRedirect("/user-page.html?user=" + recipient);
