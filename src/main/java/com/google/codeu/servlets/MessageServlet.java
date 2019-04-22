@@ -48,7 +48,7 @@ import org.jsoup.safety.Whitelist;
 @SuppressWarnings("serial")
 @WebServlet("/messages")
 public class MessageServlet extends HttpServlet {
-
+  
   private Datastore datastore;
 
   @Override
@@ -118,4 +118,5 @@ public class MessageServlet extends HttpServlet {
     System.out.println(recipient);
     response.sendRedirect("/user-page.html?user=" + recipient);
   }
+
 }
