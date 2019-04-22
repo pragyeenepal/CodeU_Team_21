@@ -55,7 +55,7 @@ public class ReviewAndComment extends HttpServlet {
 
 	@SuppressWarnings("deprecation")
 	@Override
-<<<<<<< HEAD
+
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		UserService userService = UserServiceFactory.getUserService();
 		if (!userService.isUserLoggedIn()) {
@@ -72,27 +72,10 @@ public class ReviewAndComment extends HttpServlet {
 		datastore.storeMessage(message);
 
 		response.sendRedirect("/user-page.html?user=" + recipient);
-=======
-	  public void doPost(HttpServletRequest request, HttpServletResponse response)
-	      throws IOException {
-	UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/index.html");
-      return;
-    }
-    String user = userService.getCurrentUser().getEmail();
-    String[] reviews = request.getParameterValues("reviews");
-	String text = Arrays.toString(reviews);
-    //String text = request.getParameter("reviews");
-    String recipient = request.getParameter("recipient");
 
-    Message message = new Message(user, text, recipient, "");
-    datastore.storeMessage(message);
 
-    response.sendRedirect("/user-page.html?user=" + recipient);
-   }
-    
->>>>>>> 4ca721737dcea2fd65734f2c6d40feb2065029b3
-	}
-
+	
 }
+
+
+	 
