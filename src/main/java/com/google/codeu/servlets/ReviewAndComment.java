@@ -23,37 +23,56 @@ import com.google.codeu.data.Message;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-
 @WebServlet("/review-comment")
 public class ReviewAndComment extends HttpServlet {
-	
-	 private Datastore datastore;
 
-	  @Override
-	  public void init() {
-	    datastore = new Datastore();
-	  }
-	  @Override
-	  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private Datastore datastore;
 
-	    response.setContentType("review-and-comment/html");
+	@Override
+	public void init() {
+		datastore = new Datastore();
+	}
 
-	    String user = request.getParameter("user");
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-	    if (user == null || user.equals("")) {
-	      // Request is invalid, return empty array
-	      response.getWriter().println("[]");
-	      return;
-	    }
+		response.setContentType("review-and-comment/html");
 
-	    List<Message> messages = datastore.getMessages(user);
-	    Gson gson = new Gson();
-	    String json = gson.toJson(messages);
+		String user = request.getParameter("user");
 
-	    response.getWriter().println(json);
-	  }
+		if (user == null || user.equals("")) {
+			// Request is invalid, return empty array
+			response.getWriter().println("[]");
+			return;
+		}
+
+		List<Message> messages = datastore.getMessages(user);
+		Gson gson = new Gson();
+		String json = gson.toJson(messages);
+
+		response.getWriter().println(json);
+	}
+
 	@SuppressWarnings("deprecation")
 	@Override
+<<<<<<< HEAD
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserService userService = UserServiceFactory.getUserService();
+		if (!userService.isUserLoggedIn()) {
+			response.sendRedirect("/index.html");
+			return;
+		}
+		String user = userService.getCurrentUser().getEmail();
+		String[] reviews = request.getParameterValues("reviews");
+		String text = Arrays.toString(reviews);
+		// String text = request.getParameter("reviews");
+		String recipient = request.getParameter("recipient");
+
+		Message message = new Message(user, text, recipient, "");
+		datastore.storeMessage(message);
+
+		response.sendRedirect("/user-page.html?user=" + recipient);
+=======
 	  public void doPost(HttpServletRequest request, HttpServletResponse response)
 	      throws IOException {
 	UserService userService = UserServiceFactory.getUserService();
@@ -67,12 +86,13 @@ public class ReviewAndComment extends HttpServlet {
     //String text = request.getParameter("reviews");
     String recipient = request.getParameter("recipient");
 
-    Message message = new Message(user, text, recipient);
+    Message message = new Message(user, text, recipient, "");
     datastore.storeMessage(message);
 
     response.sendRedirect("/user-page.html?user=" + recipient);
    }
     
+>>>>>>> 4ca721737dcea2fd65734f2c6d40feb2065029b3
 	}
 
-
+}

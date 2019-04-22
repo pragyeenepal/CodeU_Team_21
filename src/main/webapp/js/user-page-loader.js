@@ -43,7 +43,6 @@ function showMessageFormIfLoggedIn() {
                 const messageForm = document.getElementById('message-form');
                 messageForm.action = '/messages?recipient=' + parameterUsername;
                 messageForm.classList.remove('hidden');
-                fetchImageUploadUrlAndShowForm();
             }
         });
 }
@@ -63,7 +62,6 @@ function showMessageFormIfViewingSelf() {
                 console.log(messageForm);
                 messageForm.action = '/messages?recipient=' + parameterUsername;
                 messageForm.classList.remove('hidden');
-                fetchImageUploadUrlAndShowForm();
             }
         });
 }
