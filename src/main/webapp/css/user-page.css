@@ -55,12 +55,12 @@
 
 body {
   margin: 0;
-  background: linear-gradient(white, #ff5050) fixed;
+  background-image: url(backgroundphoto.jpeg);
   font-family: sans-serif;
 }
 
 nav {
-  background-color: #ff5050;
+  background-color: #548CE1;
   font-size: 18pt;
   padding: 10px;
 }
@@ -75,7 +75,7 @@ h2 {
 }
 
 input[type=submit] {
-  background-color: #ff5050;
+  background-color: #548CE1;
   height: 50px;
   width: 100px;
   font-size: 14pt;
@@ -95,7 +95,7 @@ input[type=submit] {
 
 .message-header {
   border-bottom: thin solid black;
-  background-image: linear-gradient(to right, white , #ff5050);
+  background-image: linear-gradient(to right, white , #548CE1);
 }
 
 .message-body {
