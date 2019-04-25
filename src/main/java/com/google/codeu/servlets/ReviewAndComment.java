@@ -26,52 +26,50 @@ import com.google.gson.JsonObject;
 
 @WebServlet("/review-comment")
 public class ReviewAndComment extends HttpServlet {
-	
-	 private Datastore datastore;
 
-	  @Override
-	  public void init() {
-	    datastore = new Datastore();
-	  }
-	  @Override
-	  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private Datastore datastore;
 
-	    response.setContentType("review-and-comment/html");
+	@Override
+	public void init() {
+		datastore = new Datastore();
+	}
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.setContentType("review-and-comment/html");
 
-	    String user = request.getParameter("user");
+		String user = request.getParameter("user");
 
-	    if (user == null || user.equals("")) {
-	      // Request is invalid, return empty array
-	      response.getWriter().println("[]");
-	      return;
-	    }
+		if (user == null || user.equals("")) {
+			// Request is invalid, return empty array
+			response.getWriter().println("[]");
+			return;
+		}
 
-	    List<Message> messages = datastore.getMessages(user);
-	    Gson gson = new Gson();
-	    String json = gson.toJson(messages);
+		List<Message> messages = datastore.getMessages(user);
+		Gson gson = new Gson();
+		String json = gson.toJson(messages);
 
-	    response.getWriter().println(json);
-	  }
+		response.getWriter().println(json);
+	}
 	@SuppressWarnings("deprecation")
 	@Override
-	  public void doPost(HttpServletRequest request, HttpServletResponse response)
-	      throws IOException {
-	UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
-      response.sendRedirect("/index.html");
-      return;
-    }
-    String user = userService.getCurrentUser().getEmail();
-    String[] reviews = request.getParameterValues("reviews");
-	String text = Arrays.toString(reviews);
-    //String text = request.getParameter("reviews");
-    String recipient = request.getParameter("recipient");
+		public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+			UserService userService = UserServiceFactory.getUserService();
+			if (!userService.isUserLoggedIn()) {
+				response.sendRedirect("/index.html");
+				return;
+			}
+			String user = userService.getCurrentUser().getEmail();
+			String[] reviews = request.getParameterValues("reviews");
+		String text = Arrays.toString(reviews);
+			//String text = request.getParameter("reviews");
+			String recipient = request.getParameter("recipient");
 
-    Message message = new Message(user, text, recipient);
-    datastore.storeMessage(message);
+			Message message = new Message(user, text, recipient);
+			datastore.storeMessage(message);
 
-    response.sendRedirect("/user-page.html?user=" + recipient);
-   }
+			response.sendRedirect("/user-page.html?user=" + recipient);
+		}
     
 	}
 
